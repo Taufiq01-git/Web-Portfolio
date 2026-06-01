@@ -1,0 +1,11 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
+
+# temp render/screenshot artifacts
+_*.png
+_*.html
+*.bak
