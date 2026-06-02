@@ -160,12 +160,11 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
 .chip {
   display: inline-flex; align-items: center; gap: 8px; width: fit-content; max-width: 100%;
   border: 1px solid var(--border-secondary); border-radius: var(--radius-md);
-  padding: 10px 20px;
+  padding: 8px 16px;
   margin-bottom: -8px;             /* 24px col gap − 8 = 16px chip→headline */
 }
-.chip__text { font-family: var(--font-sans); font-size: 16px; color: var(--text-primary); }
-.chip__handle { color: var(--accent-link); }
-.chip__wave { font-size: 16px; line-height: 1; }
+.chip__text { font-family: var(--font-sans); font-size: 14px; color: var(--text-primary); }
+.chip__sep { color: var(--text-muted); margin-inline: 2px; }
 .avatars { display: flex; }
 .avatar {
   width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--bg-page);
