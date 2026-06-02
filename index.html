@@ -36,6 +36,15 @@
 
   <!-- ===== HERO ===== -->
   <section class="section bg-page hero">
+    <!-- Photo + tags are absolutely positioned to the hero (mirrors Paper artboard:
+         photo pinned bottom-right, full hero height, clipped). Transparent PNG so it
+         floats over the dark bg with no box. On mobile it drops into normal flow. -->
+    <img class="hero__photo-img" src="assets/hero-portrait.png" alt="Rahmat Taufiqurrahman, Product Designer" width="800" height="776">
+    <div class="hero__tags" aria-hidden="true">
+      <span class="tag-pill tag-pill--fe"><span class="dot dot--live"></span>FRONTEND-AWARE</span>
+      <span class="tag-pill tag-pill--ux"><span class="dot dot--live"></span>UX/UI</span>
+      <span class="tag-pill tag-pill--ds"><span class="dot dot--live"></span>DESIGN SYSTEMS</span>
+    </div>
     <div class="container hero__inner">
       <div class="hero__col">
         <span class="chip"><span class="dot dot--blue"></span><span class="chip__text">AI-accelerated workflow · designer in the loop</span></span>
@@ -73,14 +82,6 @@
           <a class="btn-outline" href="#work">Explore my work
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
           </a>
-        </div>
-      </div>
-
-      <div class="hero__photo">
-        <div class="hero__tags">
-          <span class="tag-pill tag-pill--fe"><span class="dot dot--live"></span>FRONTEND-AWARE</span>
-          <span class="tag-pill tag-pill--ux"><span class="dot dot--live"></span>UX/UI</span>
-          <span class="tag-pill tag-pill--ds"><span class="dot dot--live"></span>DESIGN SYSTEMS</span>
         </div>
       </div>
     </div>

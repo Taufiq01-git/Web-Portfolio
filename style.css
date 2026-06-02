@@ -150,13 +150,16 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
 /* =========================================================================
    HERO
    ========================================================================= */
-.hero { position: relative; overflow: clip; }
+.hero { position: relative; overflow: clip; min-height: 720px; }
 .hero__inner {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center;
+  position: relative; z-index: 2;        /* text sits above the photo */
   padding-block: 64px 48px;
 }
-.hero__col { display: flex; flex-direction: column; gap: 32px; max-width: 554px; min-width: 0; }
-.hero__col h1 { overflow-wrap: break-word; }
+.hero__col { display: flex; flex-direction: column; gap: 32px; max-width: 589px; min-width: 0; }
+/* Headline width matches the Paper artboard (589px) so it breaks to exactly 2 lines.
+   The paragraph below stays narrower for readability. */
+.hero__col h1 { width: 589px; max-width: 100%; overflow-wrap: break-word; }
+.hero__col .p-lg { max-width: 496px; }
 .chip {
   display: inline-flex; align-items: center; gap: 8px; width: fit-content; max-width: 100%;
   border: 1px solid var(--border-secondary); border-radius: var(--radius-sm);
@@ -195,28 +198,38 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
 }
 .btn-outline svg, .btn-cta svg { width: 16px; height: 16px; }
 
-.hero__photo {
-  position: relative; border-radius: var(--radius-lg); overflow: clip;
-  min-height: 560px; background: var(--bg-lifted);
-  background-image: url("assets/hero-portrait.jpg");
-  background-size: cover; background-position: center top;
+/* Transparent portrait — pinned to the bottom-right of the hero, full hero height,
+   clipped by .hero{overflow:clip} exactly like the Paper artboard's absolute photo. */
+.hero__photo-img {
+  position: absolute; right: 0; bottom: 0; z-index: 1;
+  height: 100%; width: auto; max-width: 60%;
+  object-fit: contain; object-position: bottom right;
+  pointer-events: none; user-select: none;
 }
-.hero__tags { position: absolute; inset: 0; pointer-events: none; }
+.hero__tags { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
 .tag-pill {
   position: absolute; display: flex; align-items: center; gap: 8px;
   border: 1px solid var(--border-secondary); border-radius: var(--radius-sm);
-  padding: 4px 8px; background: rgba(11,15,20,0.6);
+  padding: 4px 8px; background: rgba(11,15,20,0.6); backdrop-filter: blur(2px);
   font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary);
 }
-.tag-pill--fe { top: 64px;  right: 24px; }
-.tag-pill--ux { top: 128px; right: 64px; }
-.tag-pill--ds { top: 320px; right: 24px; }
+.tag-pill--fe { top: 96px;  right: 32px; }
+.tag-pill--ux { top: 160px; right: 72px; }
+.tag-pill--ds { top: 352px; right: 32px; }
 
-@media (max-width: 900px) {
-  .hero__inner { grid-template-columns: 1fr; gap: 40px; }
-  .hero__photo { min-height: 420px; order: -1; }
-  .tag-pill--ux { right: 24px; }
+/* Below 1024px the text column would collide with the photo: drop the photo into
+   normal flow under the text. Transparent bg means there's no box to look wrong. */
+@media (max-width: 1024px) {
+  .hero { overflow: visible; }
+  .hero__inner { display: flex; flex-direction: column; gap: 40px; }
+  .hero__col h1 { width: auto; }
+  .hero__photo-img {
+    position: static; height: auto; width: 100%; max-width: 420px;
+    margin-inline: auto; order: 99;
+  }
+  .hero__tags { display: none; }   /* float tags only make sense over the pinned photo */
 }
+
 @media (max-width: 560px) {
   .clients__grid { grid-template-columns: repeat(2, 1fr); }
 }
