@@ -126,10 +126,12 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
 .nav__links { display: flex; align-items: center; gap: 24px; }
 .nav__link  { font-family: var(--font-mono); font-size: 14px; font-weight: 500; letter-spacing: 0.04em; color: var(--text-muted); }
 .nav__link--active { color: var(--text-primary); }
+/* #3: standard CTA padding is 12px/32px. The red CTA gets a SMALLER pad (10/24)
+   because its solid fill reads heavier than the outline buttons at equal size. */
 .btn-cta {
   display: inline-flex; align-items: center; gap: 8px;
   background: var(--accent-cta); color: var(--text-on-fill);
-  border-radius: var(--radius-md); padding: 10px 16px;
+  border-radius: var(--radius-md); padding: 10px 24px;
   font-size: 14px; font-weight: 600; letter-spacing: -0.005em;
   border: none; cursor: pointer;
 }
@@ -146,7 +148,28 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
 /* =========================================================================
    HERO
    ========================================================================= */
-.hero { position: relative; overflow: clip; min-height: 720px; }
+/* No min-height: the hero shrinks to its content so the CTA→bottom gap is exactly
+   48px (#2). The photo keeps its full height and is top-pinned, so the extra height
+   spills past the hero's bottom edge and is clipped by overflow:clip — the model's
+   size/position is unchanged, only the bottom is cropped (per user). */
+.hero {
+  position: relative; overflow: clip;
+  /* #5: DishPatch-style background translated to the dark brand palette — a soft
+     diagonal wash (no colour accent, grayscale tiers only). Subtle radial lift
+     behind the photo + a faint top→bottom gradient. */
+  background-image:
+    radial-gradient(120% 90% at 78% 30%, var(--bg-lifted) 0%, rgba(15,22,32,0) 55%),
+    linear-gradient(180deg, var(--bg-page) 0%, #0C1117 100%);
+}
+/* Diagonal facet panel in the top-right corner (mirrors the DishPatch angled plane),
+   drawn one tier lighter than the page and clipped to a triangle. Sits below content
+   and the photo. */
+.hero::before {
+  content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background: var(--bg-lifted);
+  clip-path: polygon(100% 0, 100% 62%, 46% 0);
+  opacity: 0.5;
+}
 .hero__inner {
   position: relative; z-index: 2;        /* text sits above the photo */
   padding-block: 32px 48px;              /* top 64→32: raises the statement column 32px (#6) */
@@ -178,6 +201,8 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
 .avatar--plus { background: var(--accent-cta); width: 40px; color: #fff; }
 .kicker-copy { font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); }
 
+/* #2: 48px above the clients block (24px col gap + 24px) and 48px above the CTAs. */
+.clients { margin-top: 24px; }
 .clients__label { margin-bottom: 16px; }
 .clients__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .clients__slot {
@@ -186,11 +211,11 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
   display: flex; align-items: center; justify-content: center;
   font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); letter-spacing: 0.04em;
 }
-.hero__ctas { display: flex; gap: 16px; flex-wrap: wrap; }
+.hero__ctas { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 24px; }   /* #2: 24+24 = 48px above CTAs */
 .btn-outline {
   display: inline-flex; align-items: center; gap: 8px;
   border: 1px solid var(--border-secondary); border-radius: var(--radius-md);
-  padding: 10px 16px; font-size: 14px; font-weight: 600; color: var(--text-primary);
+  padding: 12px 32px; font-size: 14px; font-weight: 600; color: var(--text-primary);
   background: transparent; cursor: pointer;
 }
 .btn-outline svg, .btn-cta svg { width: 16px; height: 16px; }
@@ -198,25 +223,30 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
 /* Transparent portrait — pinned to the bottom-right of the hero, full hero height,
    clipped by .hero{overflow:clip} exactly like the Paper artboard's absolute photo. */
 .hero__photo-img {
-  position: absolute; right: 0; bottom: 0; z-index: 1;
-  height: 100%; width: auto; max-width: 60%;
-  object-fit: contain; object-position: bottom right;
+  position: absolute; right: 0; top: 0; z-index: 1;
+  height: 718px; width: auto; max-width: 60%;   /* fixed height (Paper) — top-pinned, bottom clips */
+  object-fit: contain; object-position: top right;
   pointer-events: none; user-select: none;
 }
-/* Tags are a left-aligned vertical stack, anchored from the RIGHT edge so they stay
-   pinned to the model's head (the photo is right-pinned) across viewport widths.
-   right: 400px places FRONTEND-AWARE just touching the back of the head; the stack
-   is left-aligned with an even 36px gap (#4). */
-.hero__tags {
-  position: absolute; top: 88px; right: 200px; z-index: 3; pointer-events: none;
-  display: flex; flex-direction: column; align-items: flex-start; gap: 36px;
-}
+/* Tags use the exact CUSTOM positions from the Paper artboard [WEB-Home] v.03
+   (hero 1440 wide, photo right-pinned). Each tag is offset from the right edge so it
+   tracks the photo: right = 1440 − (paperLeft + tagWidth). Not aligned to a grid —
+   each sits against the model's head/shoulder contour, per the artboard (#1).
+   The wrapper is right-anchored to the photo column so the whole set moves WITH the
+   photo as the viewport changes. */
+.hero__tags { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
 .tag-pill {
+  position: absolute;
   display: flex; align-items: center; gap: 8px;
   border: 1px solid var(--border-secondary); border-radius: var(--radius-sm);
-  padding: 4px 8px; background: rgba(11,15,20,0.6); backdrop-filter: blur(2px);
+  padding: 2px 6px; background: rgba(11,15,20,0.6); backdrop-filter: blur(2px);
   font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary);
 }
+/* Paper positions (relative to hero right edge): FE l1145 t96 w163 · UX l1189 t158 w76
+   · DS l1177 t326 w129  →  right = 1440 − left − width. */
+.tag-pill--fe { top: 96px;  right: 132px; }
+.tag-pill--ux { top: 158px; right: 175px; }
+.tag-pill--ds { top: 326px; right: 134px; }
 
 /* Below 1024px the text column would collide with the photo: drop the photo into
    normal flow under the text. Transparent bg means there's no box to look wrong. */
@@ -345,14 +375,14 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
 .btn-whatsapp {
   display: inline-flex; align-items: center; gap: 8px;
   background: var(--whatsapp); color: #fff; border: none;
-  border-radius: var(--radius-md); padding: 16px 32px;
+  border-radius: var(--radius-md); padding: 12px 32px;
   font-size: 16px; font-weight: 600; letter-spacing: -0.005em; cursor: pointer;
 }
 .btn-email {
   display: inline-flex; align-items: center; gap: 8px;
   background: var(--bg-card-alt); color: var(--text-primary);
   border: 1px solid var(--border-secondary);
-  border-radius: var(--radius-md); padding: 16px 32px;
+  border-radius: var(--radius-md); padding: 12px 32px;
   font-size: 16px; font-weight: 600; cursor: pointer;
 }
 .curtain__meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; }
