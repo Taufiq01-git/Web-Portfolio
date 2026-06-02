@@ -198,8 +198,8 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
 .hero__photo {
   position: relative; border-radius: var(--radius-lg); overflow: clip;
   min-height: 560px; background: var(--bg-lifted);
-  background-image: url("assets/hero-portrait.png");
-  background-size: cover; background-position: top center;
+  background-image: url("assets/hero-portrait.jpg");
+  background-size: cover; background-position: center top;
 }
 .hero__tags { position: absolute; inset: 0; pointer-events: none; }
 .tag-pill {
@@ -273,8 +273,8 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
 .about__inner { display: grid; grid-template-columns: 360px 1fr; gap: 64px; align-items: start; }
 .about__photo {
   border-radius: var(--radius-lg); overflow: clip; aspect-ratio: 1 / 1;
-  background: var(--bg-lifted); background-image: url("assets/about-portrait.png");
-  background-size: cover; background-position: center;
+  background: var(--bg-lifted); background-image: url("assets/about-portrait.jpg");
+  background-size: cover; background-position: center top;
 }
 .about__eyebrow { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 16px; }
 .about__title { margin-bottom: 24px; }
