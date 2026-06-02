@@ -112,7 +112,7 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
    NAV
    ========================================================================= */
 .nav {
-  border-bottom: 1px solid var(--border-default);
+  /* No bottom border — nav blends seamlessly into the hero (#1). */
 }
 .nav__inner {
   display: flex; align-items: center; justify-content: space-between;
@@ -120,16 +120,12 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
 }
 .nav__brand { display: flex; align-items: baseline; gap: 8px; }
 .nav__logo  { font-family: var(--font-mono); font-size: 16px; font-weight: 600; letter-spacing: -0.01em; color: var(--text-primary); }
-.nav__tag   { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); }
+/* "portfolio 2026" matches nav links + CTA at 14px (#2); lighter weight so it
+   reads as metadata, not a nav item. */
+.nav__tag   { font-family: var(--font-mono); font-size: 14px; font-weight: 400; color: var(--text-muted); }
 .nav__links { display: flex; align-items: center; gap: 24px; }
 .nav__link  { font-family: var(--font-mono); font-size: 14px; font-weight: 500; letter-spacing: 0.04em; color: var(--text-muted); }
 .nav__link--active { color: var(--text-primary); }
-.nav__kbd {
-  display: flex; align-items: center; gap: 8px;
-  border: 1px solid var(--border-secondary); border-radius: var(--radius-sm);
-  padding: 6px 12px;
-  font-family: var(--font-mono); font-size: 12px; font-weight: 500; color: var(--text-muted);
-}
 .btn-cta {
   display: inline-flex; align-items: center; gap: 8px;
   background: var(--accent-cta); color: var(--text-on-fill);
@@ -153,21 +149,23 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
 .hero { position: relative; overflow: clip; min-height: 720px; }
 .hero__inner {
   position: relative; z-index: 2;        /* text sits above the photo */
-  padding-block: 64px 48px;
+  padding-block: 32px 48px;              /* top 64→32: raises the statement column 32px (#6) */
 }
-.hero__col { display: flex; flex-direction: column; gap: 32px; max-width: 589px; min-width: 0; }
+.hero__col { display: flex; flex-direction: column; gap: 24px; max-width: 589px; min-width: 0; }
 /* Headline width matches the Paper artboard (589px) so it breaks to exactly 2 lines.
    The paragraph below stays narrower for readability. */
 .hero__col h1 { width: 589px; max-width: 100%; overflow-wrap: break-word; }
 .hero__col .p-lg { max-width: 496px; }
+/* Eyebrow row removed (#5): chip sits directly above the headline, tightened to 16px. */
 .chip {
   display: inline-flex; align-items: center; gap: 8px; width: fit-content; max-width: 100%;
-  border: 1px solid var(--border-secondary); border-radius: var(--radius-sm);
-  padding: 8px 16px;
+  border: 1px solid var(--border-secondary); border-radius: var(--radius-md);
+  padding: 10px 20px;
+  margin-bottom: -8px;             /* 24px col gap − 8 = 16px chip→headline */
 }
-.chip__text { font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); }
-.kicker-row { display: flex; align-items: center; gap: 16px 12px; flex-wrap: wrap; }
-.kicker-copy { min-width: 0; overflow-wrap: anywhere; }
+.chip__text { font-family: var(--font-sans); font-size: 16px; color: var(--text-primary); }
+.chip__handle { color: var(--accent-link); }
+.chip__wave { font-size: 16px; line-height: 1; }
 .avatars { display: flex; }
 .avatar {
   width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--bg-page);
@@ -206,16 +204,20 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
   object-fit: contain; object-position: bottom right;
   pointer-events: none; user-select: none;
 }
-.hero__tags { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+/* Tags are a left-aligned vertical stack, anchored from the RIGHT edge so they stay
+   pinned to the model's head (the photo is right-pinned) across viewport widths.
+   right: 400px places FRONTEND-AWARE just touching the back of the head; the stack
+   is left-aligned with an even 36px gap (#4). */
+.hero__tags {
+  position: absolute; top: 88px; right: 200px; z-index: 3; pointer-events: none;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 36px;
+}
 .tag-pill {
-  position: absolute; display: flex; align-items: center; gap: 8px;
+  display: flex; align-items: center; gap: 8px;
   border: 1px solid var(--border-secondary); border-radius: var(--radius-sm);
   padding: 4px 8px; background: rgba(11,15,20,0.6); backdrop-filter: blur(2px);
   font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary);
 }
-.tag-pill--fe { top: 96px;  right: 32px; }
-.tag-pill--ux { top: 160px; right: 72px; }
-.tag-pill--ds { top: 352px; right: 32px; }
 
 /* Below 1024px the text column would collide with the photo: drop the photo into
    normal flow under the text. Transparent bg means there's no box to look wrong. */
