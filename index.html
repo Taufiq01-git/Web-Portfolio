@@ -28,7 +28,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"/><path d="m21 3-9 9"/><path d="M15 3h6v6"/></svg>
         </a>
       </nav>
-      <button class="nav__burger" aria-label="Open menu" id="burger">
+      <button class="nav__burger" aria-label="Open menu" aria-expanded="false" id="burger">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
     </div>
@@ -272,7 +272,7 @@ Systems: atomic design, design systems, microcopy</span></div>
       <p class="p-lg curtain__sub">B2B SaaS · Healthtech · Edtech. End-to-end. Research to shipped frontend code.</p>
       <div class="curtain__ctas">
         <a class="btn-whatsapp" href="#">Chat through WhatsApp</a>
-        <a class="btn-email" href="mailto:digitalizer24@gmail.com">Email</a>
+        <a class="btn-email" href="mailto:hello.taufiq.design@gmail.com">Email</a>
       </div>
       <div class="curtain__meta">
         <span class="mono-label">GMT+7 INDONESIA</span>
@@ -309,11 +309,43 @@ Systems: atomic design, design systems, microcopy</span></div>
     </div>
   </footer>
 
+  <!-- ===== MOBILE NAV SHEET ===== -->
+  <div class="sheet" id="navSheet" hidden>
+    <div class="sheet__bar container">
+      <a class="nav__brand" href="#">
+        <span class="nav__logo">taufiq.</span>
+        <span class="nav__tag">portfolio 2026</span>
+      </a>
+      <button class="sheet__close" aria-label="Close menu" id="sheetClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <nav class="sheet__links container">
+      <a class="sheet__link" href="#work"><span class="sheet__idx">01</span>Work</a>
+      <a class="sheet__link" href="#about"><span class="sheet__idx">02</span>About</a>
+      <a class="sheet__link" href="#voices"><span class="sheet__idx">03</span>Testimonials</a>
+    </nav>
+    <div class="sheet__foot container">
+      <a class="btn-cta sheet__cta" href="#contact">Start a conversation
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+      <span class="mono-label sheet__meta">GMT+7 INDONESIA</span>
+    </div>
+  </div>
+
   <script>
-    // Mobile menu placeholder — full nav sheet wired in a later pass.
-    document.getElementById('burger')?.addEventListener('click', function () {
-      alert('Mobile menu — coming in the next build pass.');
-    });
+    (function () {
+      var sheet = document.getElementById('navSheet');
+      var burger = document.getElementById('burger');
+      var close = document.getElementById('sheetClose');
+      function open() { sheet.hidden = false; document.body.style.overflow = 'hidden'; burger.setAttribute('aria-expanded', 'true'); }
+      function shut() { sheet.hidden = true;  document.body.style.overflow = '';       burger.setAttribute('aria-expanded', 'false'); }
+      burger?.addEventListener('click', open);
+      close?.addEventListener('click', shut);
+      // Tapping any sheet link closes the sheet (in-page anchors).
+      sheet.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', shut); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !sheet.hidden) shut(); });
+    })();
   </script>
 </body>
 </html>
