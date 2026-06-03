@@ -126,12 +126,13 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
 .nav__links { display: flex; align-items: center; gap: 24px; }
 .nav__link  { font-family: var(--font-mono); font-size: 14px; font-weight: 500; letter-spacing: 0.04em; color: var(--text-muted); }
 .nav__link--active { color: var(--text-primary); }
-/* #3: standard CTA padding is 12px/32px. The red CTA gets a SMALLER pad (10/24)
-   because its solid fill reads heavier than the outline buttons at equal size. */
+/* #3: standard CTA padding is 12px/32px. The solid-fill CTAs (red hero + green
+   curtain) get an even SMALLER pad (8/24) because the fill reads heavier than the
+   outline buttons at equal size. */
 .btn-cta {
   display: inline-flex; align-items: center; gap: 8px;
   background: var(--accent-cta); color: var(--text-on-fill);
-  border-radius: var(--radius-md); padding: 10px 24px;
+  border-radius: var(--radius-md); padding: 8px 24px;
   font-size: 14px; font-weight: 600; letter-spacing: -0.005em;
   border: none; cursor: pointer;
 }
@@ -244,7 +245,7 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
 }
 /* Paper positions (relative to hero right edge): FE l1145 t96 w163 · UX l1189 t158 w76
    · DS l1177 t326 w129  →  right = 1440 − left − width. */
-.tag-pill--fe { top: 96px;  right: 132px; }
+.tag-pill--fe { top: 96px;  right: 156px; }   /* shifted 24px further left (#2) */
 .tag-pill--ux { top: 158px; right: 175px; }
 .tag-pill--ds { top: 326px; right: 134px; }
 
@@ -375,7 +376,7 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
 .btn-whatsapp {
   display: inline-flex; align-items: center; gap: 8px;
   background: var(--whatsapp); color: #fff; border: none;
-  border-radius: var(--radius-md); padding: 12px 32px;
+  border-radius: var(--radius-md); padding: 8px 24px;
   font-size: 16px; font-weight: 600; letter-spacing: -0.005em; cursor: pointer;
 }
 .btn-email {
