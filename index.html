@@ -83,7 +83,7 @@
     <div class="container">
       <div class="case__header">
         <div class="case__meta">
-          <span class="mono-label" style="color:var(--text-secondary)">FEATURED · CASE 01</span>
+          <span class="eyebrow-chip"><span class="e-strong">FEATURED · CASE 01</span></span>
           <span class="mono-label">healthtech · 4 weeks · solo end-to-end</span>
         </div>
         <span class="case__status case__status--live"><span class="dot dot--live"></span>IN PROGRESS · TARGET Q3 2026</span>
@@ -118,7 +118,7 @@
     <div class="container">
       <div class="case__header">
         <div class="case__meta">
-          <span class="mono-label" style="color:var(--text-secondary)">FEATURED · CASE 02</span>
+          <span class="eyebrow-chip"><span class="e-strong">FEATURED · CASE 02</span></span>
           <span class="mono-label">B2B SaaS · 5 months · design + frontend</span>
         </div>
         <span class="case__status case__status--live"><span class="dot dot--live"></span>SHIPPED · 2025</span>
@@ -153,7 +153,7 @@
     <div class="container">
       <div class="case__header">
         <div class="case__meta">
-          <span class="mono-label" style="color:var(--text-secondary)">FEATURED · CASE 03</span>
+          <span class="eyebrow-chip"><span class="e-strong">FEATURED · CASE 03</span></span>
           <span class="mono-label">visual systems · 2018–2025 · multi-client</span>
         </div>
         <span class="case__status case__status--live"><span class="dot dot--live"></span>4 MARKETS · 4,000+ ICONS</span>
@@ -192,7 +192,7 @@
     <div class="container about__inner">
       <div class="about__photo"></div>
       <div class="about__text">
-        <span class="about__eyebrow"><span class="dot dot--live"></span><span class="overline">INDONESIA → WORLDWIDE · 8 YEARS</span></span>
+        <span class="eyebrow-chip about__eyebrow"><span class="e-strong">ABOUT ME</span><span class="e-muted">· INDONESIA → WORLDWIDE · 8 years</span></span>
         <h2 class="heading-1 about__title">A designer with engineering instincts — and the receipts to prove it.</h2>
         <div class="about__body">
           <p class="p-md">I'm Rahmat Taufiqurrahman — Product Designer based in Indonesia. Eight years across healthtech, B2B SaaS, and visual systems for international markets including US, Netherlands, Germany, and Israel.</p>
@@ -217,7 +217,7 @@ Systems: atomic design, design systems, microcopy</span></div>
     <div class="container">
       <div class="voices__header">
         <div class="case__meta">
-          <span class="overline">WHAT CLIENTS SAY</span>
+          <span class="eyebrow-chip"><span class="e-strong">WHAT CLIENTS SAY</span></span>
           <span class="mono-label">47 voices since 2023</span>
         </div>
         <span class="mono-label">Showing 3 of 47</span>
@@ -258,7 +258,7 @@ Systems: atomic design, design systems, microcopy</span></div>
   <!-- ===== CURTAIN CALL ===== -->
   <section class="section bg-page curtain" id="contact">
     <div class="container curtain__inner">
-      <span class="curtain__eyebrow"><span class="dot dot--live"></span><span class="overline">NEXT ENGAGEMENT · Q3 2026</span></span>
+      <span class="eyebrow-chip curtain__eyebrow"><span class="dot dot--live"></span><span class="e-strong">NEXT ENGAGEMENT · Q3 2026</span></span>
       <h2 class="display-2 curtain__title">Your next designer ships product,<br>not slide decks.</h2>
       <p class="p-lg curtain__sub">B2B SaaS · Healthtech · Edtech. End-to-end. Research to shipped frontend code.</p>
       <div class="curtain__ctas">
@@ -336,6 +336,57 @@ Systems: atomic design, design systems, microcopy</span></div>
       // Tapping any sheet link closes the sheet (in-page anchors).
       sheet.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', shut); });
       document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !sheet.hidden) shut(); });
+    })();
+
+    /* Sticky nav: solidify (bg + blur + border) once the page is scrolled past ~12px. */
+    (function () {
+      var nav = document.querySelector('.nav');
+      if (!nav) return;
+      function onScroll() { nav.classList.toggle('nav--scrolled', window.scrollY > 12); }
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+    })();
+
+    /* Independent parallax: the photo and each tag drift AWAY from the cursor when the
+       cursor is over THAT element — each reacts only to itself. A requestAnimationFrame
+       loop lerps current→target every frame for buttery motion (no CSS-transition
+       stutter, #4). The offset is normalised by a fixed radius (not half-width) so the
+       photo keeps reacting even when the cursor sits dead-centre (#3). */
+    (function () {
+      var fine = window.matchMedia('(pointer: fine)').matches;
+      var motionOK = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!fine || !motionOK) return;
+
+      function makeParallax(el, strength, radius) {
+        if (!el) return;
+        var tx = 0, ty = 0, cx = 0, cy = 0, raf = null;
+        function clamp(v) { return v < -1 ? -1 : v > 1 ? 1 : v; }
+        function loop() {
+          cx += (tx - cx) * 0.12;            // damping → smooth follow
+          cy += (ty - cy) * 0.12;
+          el.style.translate = cx.toFixed(2) + 'px ' + cy.toFixed(2) + 'px';
+          if (Math.abs(tx - cx) > 0.1 || Math.abs(ty - cy) > 0.1) {
+            raf = requestAnimationFrame(loop);
+          } else { el.style.translate = tx.toFixed(2) + 'px ' + ty.toFixed(2) + 'px'; raf = null; }
+        }
+        function kick() { if (!raf) raf = requestAnimationFrame(loop); }
+        el.addEventListener('mousemove', function (e) {
+          var r = el.getBoundingClientRect();
+          // distance from centre normalised by a FIXED radius → centre still moves
+          var dx = clamp((e.clientX - (r.left + r.width / 2)) / radius);
+          var dy = clamp((e.clientY - (r.top + r.height / 2)) / radius);
+          tx = -dx * strength; ty = -dy * strength; kick();
+        });
+        el.addEventListener('mouseleave', function () { tx = 0; ty = 0; kick(); });
+      }
+
+      var photo = document.querySelector('.hero__photo');
+      if (photo) photo.style.pointerEvents = 'auto';
+      makeParallax(photo, 22, 260);          // bigger pull, fixed 260px radius → centre reacts
+      document.querySelectorAll('.hero__tags .tag-pill').forEach(function (t) {
+        t.style.pointerEvents = 'auto';      // tags are aria-hidden but need hover hit-testing
+        makeParallax(t, 8, 90);              // gentle, small radius for the small chips
+      });
     })();
   </script>
 </body>

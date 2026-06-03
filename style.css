@@ -27,7 +27,7 @@
   --status-live:  #4ADE80;
   --status-amber: #F59E0B;
   --accent-link:  #7AB8FF;
-  --whatsapp:     #25D366;
+  --whatsapp:     #4ADE80;   /* match status-live green ("IN PROGRESS" label) */
 
   /* Type */
   --font-sans: "Inter", system-ui, sans-serif;
@@ -44,7 +44,9 @@
 /* ---- Reset ---- */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
-html, body { overflow-x: hidden; max-width: 100%; }
+/* overflow-x: clip (not hidden) — `hidden` turns the root into a scroll container and
+   breaks `position: sticky` on the nav. `clip` contains horizontal spill without that. */
+html, body { overflow-x: clip; max-width: 100%; }
 body {
   background: var(--bg-page);
   color: var(--text-primary);
@@ -112,7 +114,17 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
    NAV
    ========================================================================= */
 .nav {
-  /* No bottom border — nav blends seamlessly into the hero (#1). */
+  /* Sticky: stays pinned to the top through scroll. Transparent at the top of the
+     page (blends into hero); once scrolled, JS adds .nav--scrolled → solid blurred
+     bar so content doesn't bleed through. */
+  position: sticky; top: 0; z-index: 50;
+  transition: background-color 0.25s ease, border-color 0.25s ease, backdrop-filter 0.25s ease;
+  border-bottom: 1px solid transparent;
+}
+.nav--scrolled {
+  background: rgba(11, 15, 20, 0.72);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-bottom-color: var(--border-default);
 }
 .nav__inner {
   display: flex; align-items: center; justify-content: space-between;
@@ -132,11 +144,11 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
 .btn-cta {
   display: inline-flex; align-items: center; gap: 8px;
   background: var(--accent-cta); color: var(--text-on-fill);
-  border-radius: var(--radius-md); padding: 6px 24px;
+  border-radius: var(--radius-md); padding: 6px 24px; line-height: 1.2;
   font-size: 14px; font-weight: 600; letter-spacing: -0.005em;
   border: none; cursor: pointer;
 }
-.btn-cta svg { width: 16px; height: 16px; flex-shrink: 0; }
+.btn-cta svg { width: 16px; height: 16px; flex-shrink: 0; display: block; }
 /* hamburger — hidden on desktop */
 .nav__burger { display: none; background: none; border: none; color: var(--text-primary); cursor: pointer; padding: 8px; }
 .nav__burger svg { width: 24px; height: 24px; }
@@ -175,6 +187,17 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
 }
 .chip__text { font-family: var(--font-sans); font-size: 14px; color: var(--text-primary); }
 .chip__sep { color: var(--text-muted); margin-inline: 2px; }
+
+/* Section eyebrow as a chip (border + live dot), used across sections for consistency.
+   Mono 12px; text colour is set per-token inside. */
+.eyebrow-chip {
+  display: inline-flex; align-items: center; gap: 8px; width: fit-content; max-width: 100%;
+  border: 1px solid var(--border-secondary); border-radius: var(--radius-md);
+  padding: 6px 12px;
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.04em;
+}
+.eyebrow-chip .e-strong { color: var(--text-secondary); }   /* like "FEATURED · CASE 03" */
+.eyebrow-chip .e-muted  { color: var(--text-muted); }        /* like "visual systems" */
 .avatars { display: flex; }
 .avatar {
   width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--bg-page);
@@ -198,7 +221,7 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
   display: flex; align-items: center; justify-content: center;
   font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); letter-spacing: 0.04em;
 }
-.hero__ctas { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 24px; }   /* #2: 24+24 = 48px above CTAs */
+.hero__ctas { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 24px; }   /* both CTAs share equal height (flex stretch) — red follows the outline button */
 .btn-outline {
   display: inline-flex; align-items: center; gap: 8px;
   border: 1px solid var(--border-secondary); border-radius: var(--radius-md);
@@ -253,17 +276,36 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
   from { opacity: 0; transform: translateY(40px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+/* Photo slides in from the right → left, matching the model's leftward gaze. Slower. */
+@keyframes hero-slide-left {
+  from { opacity: 0; transform: translateX(80px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+/* Tags fade up from nothing, last — after the photo has arrived. */
+@keyframes tag-pop {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 @media (prefers-reduced-motion: no-preference) {
-  .hero__photo, .hero .chip, .hero h1, .hero .p-lg, .hero .clients, .hero__ctas {
+  /* Text elements rise up, staggered. */
+  .hero .chip, .hero h1, .hero .p-lg, .hero .clients, .hero__ctas {
     animation: hero-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
-  /* photo leads very slightly so the head clears the panel as text settles */
-  .hero__photo { animation-delay: 0.05s; }
-  .hero .chip    { animation-delay: 0.10s; }
-  .hero h1       { animation-delay: 0.14s; }
-  .hero .p-lg    { animation-delay: 0.18s; }
-  .hero .clients { animation-delay: 0.22s; }
-  .hero__ctas    { animation-delay: 0.26s; }
+  .hero .chip    { animation-delay: 0.05s; }
+  .hero h1       { animation-delay: 0.10s; }
+  .hero .p-lg    { animation-delay: 0.15s; }
+  .hero .clients { animation-delay: 0.20s; }
+  .hero__ctas    { animation-delay: 0.25s; }
+  /* Photo slides right→left, slower (1.1s) and slightly delayed. */
+  .hero__photo {
+    animation: hero-slide-left 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: 0.15s;
+  }
+  /* Tags appear LAST, after the photo lands (~1.25s+), each popping up in sequence. */
+  .tag-pill { animation: tag-pop 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .tag-pill--fe { animation-delay: 1.30s; }
+  .tag-pill--ux { animation-delay: 1.42s; }
+  .tag-pill--ds { animation-delay: 1.54s; }
 }
 
 /* Below 1024px the text column would collide with the photo: drop the photo into
@@ -397,7 +439,7 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
 .curtain__ctas { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
 .btn-whatsapp {
   display: inline-flex; align-items: center; gap: 8px;
-  background: var(--whatsapp); color: #fff; border: none;
+  background: var(--whatsapp); color: #0B0F14; border: none;   /* dark text — #4ADE80 is bright */
   border-radius: var(--radius-md); padding: 8px 24px;
   font-size: 16px; font-weight: 600; letter-spacing: -0.005em; cursor: pointer;
 }
@@ -463,3 +505,69 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
 
 /* The sheet only exists on mobile; never let it show on desktop. */
 @media (min-width: 768px) { .sheet { display: none !important; } }
+
+/* =========================================================================
+   MICRO-INTERACTIONS — hover / active on every button & text link (#4)
+   + animated border glow on the solid CTAs (#5)
+   ========================================================================= */
+
+/* ---- Buttons: nudge DOWN on hover, darker fill; settle on press (#2) ---- */
+.btn-cta, .btn-outline, .btn-whatsapp, .btn-email {
+  transition: transform 0.15s ease, background-color 0.2s ease,
+              color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+/* Solid CTAs → darker hue of their own colour, move slightly down. */
+.btn-cta:hover     { background: #C42A3E; transform: translateY(1px); }   /* darker red */
+.btn-whatsapp:hover{ background: #22C55E; transform: translateY(1px); }   /* darker green */
+.btn-cta:active, .btn-whatsapp:active { transform: translateY(1px) scale(0.98); filter: brightness(0.94); }
+/* Secondary (outline) → reverse to white fill, black text, move down. */
+.btn-outline:hover, .btn-email:hover {
+  background: #FFFFFF; color: #0B0F14; border-color: #FFFFFF; transform: translateY(1px);
+}
+.btn-outline:hover svg, .btn-email:hover svg { stroke: #0B0F14; }
+.btn-outline:active, .btn-email:active { transform: translateY(1px) scale(0.98); }
+
+/* ---- Text links: colour shift + animated underline ---- */
+.nav__link, .link-blue, .case__link, .about__link, .voices__link,
+.footer__links a, .curtain__meta a {
+  transition: color 0.18s ease, opacity 0.18s ease;
+}
+.nav__link:hover { color: var(--text-primary); }
+.link-blue:hover, .case__link:hover, .about__link:hover, .voices__link:hover { opacity: 0.75; }
+.footer__links a:hover, .curtain__meta a:hover { color: var(--text-primary); }
+.nav__link:active, .link-blue:active, .case__link:active,
+.about__link:active, .voices__link:active { opacity: 0.55; }
+
+/* ---- Animated border LINE on the hero red CTA + curtain green CTA (#2/#5) ---- */
+/* A bright segment of a conic-gradient travels around the button's edge as a thin
+   LINE (not a spread glow). Built by masking a conic-gradient to a 1.5px ring so only
+   the border is painted. Rotates while idle; fades out on hover. Hero CTA only (the
+   nav 'Let's talk' is deliberately plain — #1). */
+@property --glow-angle {
+  syntax: "<angle>"; inherits: false; initial-value: 0deg;
+}
+@keyframes glow-spin { to { --glow-angle: 360deg; } }
+
+.hero__ctas .btn-cta, .btn-whatsapp { position: relative; }
+.hero__ctas .btn-cta::after, .btn-whatsapp::after {
+  content: ""; position: absolute; inset: 0; z-index: 1;
+  border-radius: inherit; padding: 1.5px;     /* ring thickness */
+  background: conic-gradient(from var(--glow-angle),
+    transparent 0deg, var(--glow-color) 55deg, #FFFFFF 75deg, var(--glow-color) 95deg,
+    transparent 150deg, transparent 360deg);
+  /* paint only the ring: fill minus content-box */
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  animation: glow-spin 3.5s linear infinite;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+.hero__ctas .btn-cta { --glow-color: #FF8A99; }   /* lighter tint of accent-cta red */
+.btn-whatsapp        { --glow-color: #A7F3C4; }   /* lighter tint of the live green */
+/* On hover the travelling line fades; the brightness lift takes over. */
+.hero__ctas .btn-cta:hover::after, .btn-whatsapp:hover::after { opacity: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__ctas .btn-cta::after, .btn-whatsapp::after { animation: none; opacity: 0; }
+}
