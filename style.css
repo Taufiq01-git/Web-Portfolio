@@ -127,12 +127,12 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
 .nav__link  { font-family: var(--font-mono); font-size: 14px; font-weight: 500; letter-spacing: 0.04em; color: var(--text-muted); }
 .nav__link--active { color: var(--text-primary); }
 /* #3: standard CTA padding is 12px/32px. The solid-fill CTAs (red hero + green
-   curtain) get an even SMALLER pad (8/24) because the fill reads heavier than the
+   curtain) get an even SMALLER pad (6/24) because the fill reads heavier than the
    outline buttons at equal size. */
 .btn-cta {
   display: inline-flex; align-items: center; gap: 8px;
   background: var(--accent-cta); color: var(--text-on-fill);
-  border-radius: var(--radius-md); padding: 8px 24px;
+  border-radius: var(--radius-md); padding: 6px 24px;
   font-size: 14px; font-weight: 600; letter-spacing: -0.005em;
   border: none; cursor: pointer;
 }
@@ -149,18 +149,17 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
 /* =========================================================================
    HERO
    ========================================================================= */
-/* No min-height: the hero shrinks to its content so the CTA→bottom gap is exactly
-   48px (#2). The photo keeps its full height and is top-pinned, so the extra height
-   spills past the hero's bottom edge and is clipped by overflow:clip — the model's
-   size/position is unchanged, only the bottom is cropped (per user). */
+/* overflow:visible so the diamond's bottom point is NOT clipped — it spills past the
+   hero's bottom edge and overlaps the Featured Case 01 section below. The hero sits
+   above that section (z-index) so the photo stays on top. */
 .hero {
-  position: relative; overflow: clip;
+  position: relative; z-index: 1; overflow: visible;
   /* Soft top→bottom wash only; the diamond panel is the single geometric accent. */
   background-image: linear-gradient(180deg, var(--bg-page) 0%, #0C1117 100%);
 }
 .hero__inner {
   position: relative; z-index: 2;        /* text sits above the photo */
-  padding-block: 32px 48px;              /* top 64→32: raises the statement column 32px (#6) */
+  padding-block: 32px 84px;              /* top 32; bottom 84px = CTA→hero bottom gap (per user) */
 }
 .hero__col { display: flex; flex-direction: column; gap: 24px; max-width: 589px; min-width: 0; }
 /* Headline width matches the Paper artboard (589px) so it breaks to exactly 2 lines.
@@ -220,18 +219,7 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
 /* Rectangle 7299 — a 498×473 rounded rect rotated -45° = a rounded diamond. Soft
    gradient around the Paper fill #192227. Positioned behind the torso so the head
    clears its top edge. transform-origin matches Paper (top-left). */
-.hero__panel {
-  position: absolute; z-index: 1;
-  width: 498px; height: 473px;
-  left: 30px; top: 160px;
-  border-radius: 64px;
-  transform: rotate(-45deg);
-  transform-origin: 50% 50%;
-  /* Brighter, with depth: lighter at the screen-bottom, darker toward the top, so the
-     panel reads as a lit surface the model rises out of. The 45° gradient angle
-     compensates for the -45° rotation so the light edge stays at the visual bottom. */
-  background: linear-gradient(45deg, #2A3741 0%, #1E2930 45%, #161E24 100%);
-}
+/* Photo v4 has the diamond panel baked into the PNG — no separate panel element. */
 .hero__photo-img {
   position: absolute; right: 0; top: 0; z-index: 2;
   height: 798px; width: auto;        /* Paper photo height/position — top:0, bottom clips */
@@ -290,10 +278,6 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
     margin-inline: auto; order: 99;
   }
   .hero__photo-img { position: relative; z-index: 2; height: auto; width: 100%; }
-  .hero__panel {
-    left: 50%; top: auto; bottom: 8%; right: auto; z-index: 1;
-    width: 240px; height: 228px; translate: -50% 0;
-  }
   .hero__tags { display: none; }   /* float tags only make sense over the pinned photo */
 }
 
@@ -305,6 +289,9 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
    CASE PREVIEW (Featured)
    ========================================================================= */
 .case { padding-block: 96px; }
+/* Featured Case 01 (#work) sits right under the hero, whose photo overlaps into it:
+   84px top padding gives the overlapping diamond room before the case content. */
+#work.case { padding-top: 84px; }
 .case__header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
 .case__meta { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
 .case__status { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.04em; }
