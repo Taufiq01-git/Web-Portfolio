@@ -155,21 +155,8 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
    size/position is unchanged, only the bottom is cropped (per user). */
 .hero {
   position: relative; overflow: clip;
-  /* #5: DishPatch-style background translated to the dark brand palette — a soft
-     diagonal wash (no colour accent, grayscale tiers only). Subtle radial lift
-     behind the photo + a faint top→bottom gradient. */
-  background-image:
-    radial-gradient(120% 90% at 78% 30%, var(--bg-lifted) 0%, rgba(15,22,32,0) 55%),
-    linear-gradient(180deg, var(--bg-page) 0%, #0C1117 100%);
-}
-/* Diagonal facet panel in the top-right corner (mirrors the DishPatch angled plane),
-   drawn one tier lighter than the page and clipped to a triangle. Sits below content
-   and the photo. */
-.hero::before {
-  content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
-  background: var(--bg-lifted);
-  clip-path: polygon(100% 0, 100% 62%, 46% 0);
-  opacity: 0.5;
+  /* Soft top→bottom wash only; the diamond panel is the single geometric accent. */
+  background-image: linear-gradient(180deg, var(--bg-page) 0%, #0C1117 100%);
 }
 .hero__inner {
   position: relative; z-index: 2;        /* text sits above the photo */
@@ -221,11 +208,33 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
 }
 .btn-outline svg, .btn-cta svg { width: 16px; height: 16px; }
 
-/* Transparent portrait — pinned to the bottom-right of the hero, full hero height,
-   clipped by .hero{overflow:clip} exactly like the Paper artboard's absolute photo. */
+/* Portrait composition — a rounded diamond panel behind a transparent portrait.
+   Mirrors Paper "..._Edit": Rectangle 7299 (498×473, radius 64, rotate -45°) +
+   photo 740×798 right-pinned. The wrapper is absolute to the hero; both children are
+   absolute to the wrapper so the head can rise above the panel's top edge. */
+.hero__photo {
+  position: absolute; top: 0; right: 0; z-index: 1;
+  width: 740px; height: 100%;
+  pointer-events: none;
+}
+/* Rectangle 7299 — a 498×473 rounded rect rotated -45° = a rounded diamond. Soft
+   gradient around the Paper fill #192227. Positioned behind the torso so the head
+   clears its top edge. transform-origin matches Paper (top-left). */
+.hero__panel {
+  position: absolute; z-index: 1;
+  width: 498px; height: 473px;
+  left: 30px; top: 160px;
+  border-radius: 64px;
+  transform: rotate(-45deg);
+  transform-origin: 50% 50%;
+  /* Brighter, with depth: lighter at the screen-bottom, darker toward the top, so the
+     panel reads as a lit surface the model rises out of. The 45° gradient angle
+     compensates for the -45° rotation so the light edge stays at the visual bottom. */
+  background: linear-gradient(45deg, #2A3741 0%, #1E2930 45%, #161E24 100%);
+}
 .hero__photo-img {
-  position: absolute; right: 0; top: 0; z-index: 1;
-  height: 718px; width: auto; max-width: 60%;   /* fixed height (Paper) — top-pinned, bottom clips */
+  position: absolute; right: 0; top: 0; z-index: 2;
+  height: 798px; width: auto;        /* Paper photo height/position — top:0, bottom clips */
   object-fit: contain; object-position: top right;
   pointer-events: none; user-select: none;
 }
@@ -249,15 +258,41 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
 .tag-pill--ux { top: 158px; right: 175px; }
 .tag-pill--ds { top: 326px; right: 134px; }
 
+/* ---- First-load slide-up ----
+   The photo group + the statement elements rise into place together on load,
+   as if the model steps up out of the diamond panel. Disabled for reduced-motion. */
+@keyframes hero-rise {
+  from { opacity: 0; transform: translateY(40px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .hero__photo, .hero .chip, .hero h1, .hero .p-lg, .hero .clients, .hero__ctas {
+    animation: hero-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  /* photo leads very slightly so the head clears the panel as text settles */
+  .hero__photo { animation-delay: 0.05s; }
+  .hero .chip    { animation-delay: 0.10s; }
+  .hero h1       { animation-delay: 0.14s; }
+  .hero .p-lg    { animation-delay: 0.18s; }
+  .hero .clients { animation-delay: 0.22s; }
+  .hero__ctas    { animation-delay: 0.26s; }
+}
+
 /* Below 1024px the text column would collide with the photo: drop the photo into
    normal flow under the text. Transparent bg means there's no box to look wrong. */
 @media (max-width: 1024px) {
   .hero { overflow: visible; }
   .hero__inner { display: flex; flex-direction: column; gap: 40px; }
   .hero__col h1 { width: auto; }
-  .hero__photo-img {
-    position: static; height: auto; width: 100%; max-width: 420px;
+  /* Photo wrapper drops into normal flow; panel sits behind, centred under the torso. */
+  .hero__photo {
+    position: relative; width: 100%; max-width: 360px; height: auto;
     margin-inline: auto; order: 99;
+  }
+  .hero__photo-img { position: relative; z-index: 2; height: auto; width: 100%; }
+  .hero__panel {
+    left: 50%; top: auto; bottom: 8%; right: auto; z-index: 1;
+    width: 240px; height: 228px; translate: -50% 0;
   }
   .hero__tags { display: none; }   /* float tags only make sense over the pinned photo */
 }
